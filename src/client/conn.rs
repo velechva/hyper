@@ -79,7 +79,7 @@ use httparse::ParserConfig;
 use pin_project_lite::pin_project;
 use tokio::io::{AsyncRead, AsyncWrite};
 use tower_service::Service;
-use tracing::{debug, trace};
+use tracing::{debug, trace, info};
 
 use super::dispatch;
 use crate::body::HttpBody;
@@ -1004,7 +1004,7 @@ impl Builder {
         let opts = self.clone();
 
         async move {
-            trace!("client handshake {:?}", opts.version);
+            info!("client handshake {:?}", opts.version);
 
             let (tx, rx) = dispatch::channel();
             let proto = match opts.version {

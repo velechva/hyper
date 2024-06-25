@@ -9,7 +9,7 @@ use http::header::{self, Entry, HeaderName, HeaderValue};
 use http::{HeaderMap, Method, StatusCode, Version};
 #[cfg(all(feature = "server", feature = "runtime"))]
 use tokio::time::Instant;
-use tracing::{debug, error, trace, trace_span, warn};
+use tracing::{debug, error, trace, trace_span, warn, info};
 
 use crate::body::DecodedLength;
 #[cfg(feature = "server")]
@@ -153,7 +153,7 @@ impl Http1Transaction for Server {
             let bytes = buf.as_ref();
             match req.parse_with_uninit_headers(bytes, &mut headers) {
                 Ok(httparse::Status::Complete(parsed_len)) => {
-                    trace!("Request.parse Complete({})", parsed_len);
+                    info!("Request.parse Complete({})", parsed_len);
                     len = parsed_len;
                     let uri = req.path.unwrap();
                     if uri.len() > MAX_URI_LEN {
@@ -955,7 +955,7 @@ impl Http1Transaction for Client {
                     &mut headers,
                 ) {
                     Ok(httparse::Status::Complete(len)) => {
-                        trace!("Response.parse Complete({})", len);
+                        info!("Response.parse Complete({})", len);
                         let status = StatusCode::from_u16(res.code.unwrap())?;
 
                         let reason = {

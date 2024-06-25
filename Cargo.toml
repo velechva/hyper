@@ -1,6 +1,6 @@
 [package]
 name = "hyper"
-version = "0.14.29"
+version = "0.14.28"
 description = "A fast and correct HTTP library."
 readme = "README.md"
 homepage = "https://hyper.rs"
@@ -33,7 +33,7 @@ itoa = "1"
 tracing = { version = "0.1", default-features = false, features = ["std"] }
 pin-project-lite = "0.2.4"
 tower-service = "0.3"
-tokio = { version = "1.27", features = ["sync"] }
+tokio = { version = "1.2", features = ["sync"] }
 want = "0.3"
 
 # Optional

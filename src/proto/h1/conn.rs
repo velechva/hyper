@@ -14,7 +14,7 @@ use httparse::ParserConfig;
 use tokio::io::{AsyncRead, AsyncWrite};
 #[cfg(all(feature = "server", feature = "runtime"))]
 use tokio::time::Sleep;
-use tracing::{debug, error, trace};
+use tracing::{debug, error, trace, info};
 
 use super::io::Buffered;
 use super::{Decoder, Encode, EncodedBuf, Encoder, Http1Transaction, ParseContext, Wants};
@@ -190,7 +190,7 @@ where
         cx: &mut Context<'_>,
     ) -> Poll<Option<crate::Result<(MessageHead<T::Incoming>, DecodedLength, Wants)>>> {
         debug_assert!(self.can_read_head());
-        trace!("Conn::read_head");
+        info!("Conn::read_head");
 
         let msg = match ready!(self.io.parse::<T>(
             cx,
@@ -280,7 +280,7 @@ where
                 Err(e) => Poll::Ready(Some(Err(e))),
             }
         } else {
-            debug!("read eof");
+            info!("read eof");
             self.close_write();
             Poll::Ready(None)
         }
@@ -297,7 +297,7 @@ where
                 match ready!(decoder.decode(cx, &mut self.io)) {
                     Ok(slice) => {
                         let (reading, chunk) = if decoder.is_eof() {
-                            debug!("incoming body completed");
+                            info!("incoming body completed");
                             (
                                 Reading::KeepAlive,
                                 if !slice.is_empty() {
@@ -945,20 +945,20 @@ impl KA {
 
 impl State {
     fn close(&mut self) {
-        trace!("State::close()");
+        info!("State::close()");
         self.reading = Reading::Closed;
         self.writing = Writing::Closed;
         self.keep_alive.disable();
     }
 
     fn close_read(&mut self) {
-        trace!("State::close_read()");
+        info!("State::close_read()");
         self.reading = Reading::Closed;
         self.keep_alive.disable();
     }
 
     fn close_write(&mut self) {
-        trace!("State::close_write()");
+        info!("State::close_write()");
         self.writing = Writing::Closed;
         self.keep_alive.disable();
     }

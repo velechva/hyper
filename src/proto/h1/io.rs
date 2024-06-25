@@ -14,7 +14,7 @@ use bytes::{Buf, BufMut, Bytes, BytesMut};
 use tokio::io::{AsyncRead, AsyncWrite, ReadBuf};
 #[cfg(all(feature = "server", feature = "runtime"))]
 use tokio::time::Instant;
-use tracing::{debug, trace};
+use tracing::{debug, trace, info};
 
 use super::{Http1Transaction, ParseContext, ParsedMessage};
 use crate::common::buf::BufList;
@@ -205,7 +205,7 @@ where
                 },
             )? {
                 Some(msg) => {
-                    debug!("parsed {} headers", msg.head.headers.len());
+                    info!("parsed {} headers", msg.head.headers.len());
 
                     #[cfg(all(feature = "server", feature = "runtime"))]
                     {
@@ -245,7 +245,7 @@ where
                 }
             }
             if ready!(self.poll_read_from_io(cx)).map_err(crate::Error::new_io)? == 0 {
-                trace!("parse eof");
+                info!("parse eof");
                 return Poll::Ready(Err(crate::Error::new_incomplete()));
             }
         }
@@ -264,7 +264,7 @@ where
         match Pin::new(&mut self.io).poll_read(cx, &mut buf) {
             Poll::Ready(Ok(_)) => {
                 let n = buf.filled().len();
-                trace!("received {} bytes", n);
+                info!("received {} bytes", n);
                 unsafe {
                     // Safety: we just read that many bytes into the
                     // uninitialized part of the buffer, so this is okay.

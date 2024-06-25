@@ -5,7 +5,7 @@ use std::task::{Context, Poll};
 use std::usize;
 
 use bytes::Bytes;
-use tracing::{debug, trace};
+use tracing::{debug, trace, info};
 
 use super::io::MemRead;
 use super::DecodedLength;
@@ -363,13 +363,13 @@ impl ChunkedState {
         rdr: &mut R,
         size: u64,
     ) -> Poll<Result<ChunkedState, io::Error>> {
-        trace!("Chunk size is {:?}", size);
+        info!("Chunk size is {:?}", size);
         match byte!(rdr, cx) {
             b'\n' => {
                 if size == 0 {
                     Poll::Ready(Ok(ChunkedState::EndCr))
                 } else {
-                    debug!("incoming chunked header: {0:#X} ({0} bytes)", size);
+                    info!("incoming chunked header: {0:#X} ({0} bytes)", size);
                     Poll::Ready(Ok(ChunkedState::Body))
                 }
             }
@@ -386,7 +386,7 @@ impl ChunkedState {
         rem: &mut u64,
         buf: &mut Option<Bytes>,
     ) -> Poll<Result<ChunkedState, io::Error>> {
-        trace!("Chunked read, remaining={:?}", rem);
+        info!("Chunked read, remaining={:?}", rem);
 
         // cap remaining bytes at the max capacity of usize
         let rem_cap = match *rem {

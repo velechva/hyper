@@ -12,7 +12,7 @@ use futures_util::future::{self, Either, FutureExt as _, TryFutureExt as _};
 use http::header::{HeaderValue, HOST};
 use http::uri::{Port, Scheme};
 use http::{Method, Request, Response, Uri, Version};
-use tracing::{debug, trace, warn};
+use tracing::{debug, trace, warn, info};
 
 use crate::body::{Body, HttpBody};
 use crate::client::connect::CaptureConnectionExtension;
@@ -506,7 +506,7 @@ where
                         Either::Left(Box::pin(async move {
                             let (tx, conn) = conn_builder.handshake(io).await?;
 
-                            trace!("handshake complete, spawning background dispatcher task");
+                            info!("handshake complete, spawning background dispatcher task");
                             executor.execute(
                                 conn.map_err(|e| debug!("client connection error: {}", e))
                                     .map(|_| ()),

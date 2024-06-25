@@ -7,7 +7,7 @@ use std::task::{Context, Poll};
 use bytes::{Buf, Bytes};
 use http::Request;
 use tokio::io::{AsyncRead, AsyncWrite};
-use tracing::{debug, trace};
+use tracing::{debug, trace, info};
 
 use super::{Http1Transaction, Wants};
 use crate::body::{Body, DecodedLength, HttpBody};
@@ -598,7 +598,7 @@ cfg_client! {
                 }
                 Poll::Ready(None) => {
                     // user has dropped sender handle
-                    trace!("client tx closed");
+                    info!("client tx closed");
                     this.rx_closed = true;
                     Poll::Ready(None)
                 }
